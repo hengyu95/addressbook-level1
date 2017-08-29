@@ -99,6 +99,7 @@ public class AddressBook {
                                                             + PERSON_DATA_PREFIX_PHONE + "%2$s " // phone
                                                             + PERSON_DATA_PREFIX_EMAIL + "%3$s"; // email
     private static final String COMMAND_ADD_WORD = "add";
+    private static final String COMMAND_ALPHA_WORD = "findalpha";
     private static final String COMMAND_ADD_DESC = "Adds a person to the address book.";
     private static final String COMMAND_ADD_PARAMETERS = "NAME "
                                                       + PERSON_DATA_PREFIX_PHONE + "PHONE_NUMBER "
@@ -383,6 +384,8 @@ public class AddressBook {
             return getUsageInfoForAllCommands();
         case COMMAND_EXIT_WORD:
             executeExitProgramRequest();
+        case COMMAND_ALPHA_WORD:
+            return executeAlphaSearch(commandArgs);
         default:
             return getMessageForInvalidCommandInput(commandType, getUsageInfoForAllCommands());
         }
@@ -493,6 +496,19 @@ public class AddressBook {
         return matchedPersons;
     }
 
+
+    private static ArrayList<String[]> getPersonsWithNameContainingAlphabet(char keywords) {
+        final ArrayList<String[]> matchedPersons = new ArrayList<>();
+        for (String[] person : getAllPersonsInAddressBook()) {
+//            final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
+            if (person[0].charAt(0) == Character.toLowerCase(keywords) ||
+                    person[0].charAt(0) == Character.toUpperCase(keywords)) {
+                matchedPersons.add(person);
+            }
+        }
+        return matchedPersons;
+    }
+
     /**
      * Deletes person identified using last displayed index.
      *
@@ -566,6 +582,16 @@ public class AddressBook {
     private static String executeClearAddressBook() {
         clearAddressBook();
         return MESSAGE_ADDRESSBOOK_CLEARED;
+    }
+
+//    Displays a list of names that starts with the given alphabet (case-insensitive)
+
+    private static String executeAlphaSearch(String commandArgs) {
+//        final Set<String> keywords = extractKeywordsFromFindPersonArgs(commandArgs);
+        final ArrayList<String[]> personsFound = getPersonsWithNameContainingAlphabet(commandArgs.charAt(0));
+        showToUser(personsFound);
+        return getMessageForPersonsDisplayedSummary(personsFound);
+
     }
 
     /**
